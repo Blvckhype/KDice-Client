@@ -6,6 +6,7 @@ import Model.Client;
 import Model.Game;
 
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Random;
 
 public class App {
@@ -14,7 +15,7 @@ public class App {
     private static Client client;
     private static Game game;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SocketException {
         String response = "";
         try {
             socket = new Socket("localhost", 8888);
@@ -27,7 +28,8 @@ public class App {
             game = new Game();
             GameHelper gameHelper = new GameHelper();
             gameHelper.updateBoard(client, game);
-            String message = "";
+            String message;
+
             //noinspection InfiniteLoopStatement
             while (true) {
 
@@ -36,7 +38,7 @@ public class App {
 
                 int[] attackInfo;
                 String attackResult = "", attack = "";
-                System.out.println("MESSEGE: " + message);
+//                System.out.println("MESSEGE: " + message);
                 if (message.startsWith("TWOJ")) {
                     do {
                         attack = gameHelper.generateAttack(client, game);
@@ -69,17 +71,22 @@ public class App {
                     gameHelper.updateBoard(client, game);   // ODEBRANIE KOMUNIKATU PLANSZA I ZAKUTALIZOWANIE PLANSZY
                 }
                 if (message.startsWith("TUR")) {
-                    System.out.println("MOJA TURA: " + message); // WYSWIETLENIE KOMUNIKATU KONCA TURY
-                    game = new Game();  // WYLOSOWANIE NOWEJ PLANSZY
-                    gameHelper.updateBoard(client, game);  // ODEBRANIE I ZAKTUALIZOWANIE PLANSZY
+                    System.out.println(message); // WYSWIETLENIE KOMUNIKATU KONCA TURY
+                    if (!message.substring(message.indexOf(" ") + 1, message.lastIndexOf(" ")).equals("10")) {
+                        game = new Game();  // WYLOSOWANIE NOWEJ PLANSZY
+                        gameHelper.updateBoard(client, game);  // ODEBRANIE I ZAKTUALIZOWANIE PLANSZY
+                    }
                 }
                 if (message.startsWith("WYNI")) {
-                    System.out.println(client.readMessage()); //ODERBANIE KOMUNIKATU KONCA
+                    System.out.println(message); //ODERBANIE KOMUNIKATU KONCA
+                    client.getSocket().close();
                     break;
                 }
             }
+        } catch (SocketException sockEx) {
+            sockEx.printStackTrace();
         } catch (Exception ex) {
-             System.out.println("Client Error : " + ex.getMessage());
+            System.out.println("Client Error : " + ex.getMessage());
             ex.printStackTrace();
         }
     }

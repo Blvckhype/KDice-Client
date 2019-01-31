@@ -50,7 +50,6 @@ public class Client {
 
     public String readMessage() throws IOException {
         return this.getFromServer().readLine();
-
     }
 
     public void sendMessage(String message) throws IOException {
