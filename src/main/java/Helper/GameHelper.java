@@ -14,6 +14,7 @@ public class GameHelper {
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j <5; j++) {
                 String command = client.getFromServer().readLine();
+                System.out.println(command);
                 game.updateBoard(command);
             }
         }
@@ -34,7 +35,8 @@ public class GameHelper {
                             cubeDifference = myBoard[point.getX() + 1][point.getY()].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                             if (cubeDifference <= 0)
                                 attackOptions.add(new Point(point.getX() + 1, point.getY(), cubeDifference, point));
-                        } else if (myBoard[point.getX() + 1][point.getY()].getOwner() == 0 && myBoard[point.getX() + 1][point.getY()].getCubeCount() == 0)
+                        }
+                        if (myBoard[point.getX() + 1][point.getY()].getOwner() == 0 && myBoard[point.getX() + 1][point.getY()].getCubeCount() == 0)
                             moveOptions.add(new Point(point.getX() + 1, point.getY(), point));
                     } else {
                         if (myBoard[point.getX() - 1][point.getY()].getOwner() != 0 &&
@@ -42,7 +44,8 @@ public class GameHelper {
                             cubeDifference = myBoard[point.getX() - 1][point.getY()].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                             if (cubeDifference <= 0)
                                 attackOptions.add(new Point(point.getX() - 1, point.getY(), cubeDifference, point));
-                        } else if (myBoard[point.getX() - 1][point.getY()].getOwner() == 0 && myBoard[point.getX() - 1][point.getY()].getCubeCount() == 8)
+                        }
+                        if (myBoard[point.getX() - 1][point.getY()].getOwner() == 0 && myBoard[point.getX() - 1][point.getY()].getCubeCount() == 0)
                             moveOptions.add(new Point(point.getX() - 1, point.getY(), point));
                     }
                 }
@@ -52,14 +55,17 @@ public class GameHelper {
                         cubeDifference = myBoard[point.getX()][point.getY() + 1].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                         if (cubeDifference <= 0)
                             attackOptions.add(new Point(point.getX(), point.getY() + 1, cubeDifference, point));
-                    } else if (myBoard[point.getX()][point.getY() + 1].getOwner() == 0 && myBoard[point.getX()][point.getY() + 1].getCubeCount() == 8)
+                    }
+                    if (myBoard[point.getX()][point.getY() + 1].getOwner() == 0 && myBoard[point.getX()][point.getY() + 1].getCubeCount() == 0)
                         moveOptions.add(new Point(point.getX(), point.getY() + 1, point));
+
                     if (myBoard[point.getX()][point.getY() - 1].getOwner() != 0 &&
                             myBoard[point.getX()][point.getY() - 1].getOwner() != client.getId()) {
                         cubeDifference = myBoard[point.getX()][point.getY() - 1].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                         if (cubeDifference <= 0)
                             attackOptions.add(new Point(point.getX(), point.getY() - 1, cubeDifference, point));
-                    } else if (myBoard[point.getX()][point.getY() - 1].getOwner() == 0 && myBoard[point.getX()][point.getY() - 1].getCubeCount() == 8)
+                    }
+                    if (myBoard[point.getX()][point.getY() - 1].getOwner() == 0 && myBoard[point.getX()][point.getY() - 1].getCubeCount() == 0)
                         moveOptions.add(new Point(point.getX(), point.getY() - 1, point));
                 }
                 if (point.getY() == 0 || point.getY() == 4) {
@@ -69,15 +75,18 @@ public class GameHelper {
                             cubeDifference = myBoard[point.getX()][point.getY() + 1].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                             if (cubeDifference <= 0)
                                 attackOptions.add(new Point(point.getX(), point.getY() + 1, cubeDifference, point));
-                        } else if (myBoard[point.getX()][point.getY() + 1].getOwner() == 0 && myBoard[point.getX()][point.getY() + 1].getCubeCount() == 8)
+                        }
+                        if (myBoard[point.getX()][point.getY() + 1].getOwner() == 0 && myBoard[point.getX()][point.getY() + 1].getCubeCount() == 0)
                             moveOptions.add(new Point(point.getX(), point.getY() + 1, point));
+
                     } else if (point.getY() == 4) {
                         if (myBoard[point.getX()][point.getY() - 1].getOwner() != 0 &&
                                 myBoard[point.getX()][point.getY() - 1].getOwner() != client.getId()) {
                             cubeDifference = myBoard[point.getX()][point.getY() - 1].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                             if (cubeDifference <= 0)
                                 attackOptions.add(new Point(point.getX(), point.getY() - 1, cubeDifference, point));
-                        } else if (myBoard[point.getX()][point.getY() - 1].getOwner() == 0 && myBoard[point.getX()][point.getY() - 1].getCubeCount() == 8)
+                        }
+                        if (myBoard[point.getX()][point.getY() - 1].getOwner() == 0 && myBoard[point.getX()][point.getY() - 1].getCubeCount() == 0)
                             moveOptions.add(new Point(point.getX(), point.getY() - 1, point));
                     }
                 }
@@ -88,15 +97,18 @@ public class GameHelper {
                         if (cubeDifference <= 0) {
                             attackOptions.add(new Point(point.getX() - 1, point.getY(), cubeDifference, point));
                         }
-                    } else if (myBoard[point.getX() - 1][point.getY()].getOwner() == 0 && myBoard[point.getX() - 1][point.getY()].getCubeCount() == 8)
+                    }
+                    if (myBoard[point.getX() - 1][point.getY()].getOwner() == 0 && myBoard[point.getX() - 1][point.getY()].getCubeCount() == 0)
                         moveOptions.add(new Point(point.getX() - 1, point.getY(), point));
+
                     if (myBoard[point.getX() + 1][point.getY()].getOwner() != 0 &&
                             myBoard[point.getX() + 1][point.getY()].getOwner() != client.getId()) {
                         cubeDifference = myBoard[point.getX() + 1][point.getY()].getCubeCount() - myBoard[point.getX()][point.getY()].getCubeCount();
                         if (cubeDifference <= 0) {
                             attackOptions.add(new Point(point.getX() + 1, point.getY(), cubeDifference, point));
                         }
-                    } else if (myBoard[point.getX() + 1][point.getY()].getOwner() == 0 && myBoard[point.getX() + 1][point.getY()].getCubeCount() == 0)
+                    }
+                    if (myBoard[point.getX() + 1][point.getY()].getOwner() == 0 && myBoard[point.getX() + 1][point.getY()].getCubeCount() == 0)
                         moveOptions.add(new Point(point.getX() + 1, point.getY(), point));
                 }
             }
@@ -104,7 +116,7 @@ public class GameHelper {
 
         Point point = getBestToAttack(attackOptions, moveOptions);
         if(point != null) {
-            return command + (point.getSourcePoint().getX() + 1) + " " + (point.getSourcePoint().getY() + 1) + " " + (point.getX() + 1) + " " + (point.getY() + 1) + "\n ";
+            return command + (point.getSourcePoint().getX() + 1) + " " + (point.getSourcePoint().getY() + 1) + " " + (point.getX() + 1) + " " + (point.getY() + 1) + "\n";
         } else {
             return "PASS\n";
         }
@@ -115,7 +127,7 @@ public class GameHelper {
         int max = 0;
         int i = 0;
         for (Point point : attacks) {
-            if (point.getCubes() >= 0 && point.getCubes() > max) {
+            if (point.getCubes() >= 0 && point.getCubes() >= max) {
                 position = i;
                 max = point.getCubes();
             }

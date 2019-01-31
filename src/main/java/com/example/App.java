@@ -13,74 +13,73 @@ public class App {
     private static Socket socket;
     private static Client client;
     private static Game game;
-    private static final String ERROR = "ERROR\n";
-    private static final String OK = "OK\n";
 
     public static void main(String[] args) {
+        String response = "";
         try {
             socket = new Socket("localhost", 8888);
             client = new Client(socket);
-            System.out.print(client.readMessage()); //POLACZONO
+            System.out.println(client.readMessage()); //POLACZONO
             client.sendMessage(generateNickname());
-            String response = client.readMessage();
-//            response = client.getClientHelper().validateLogin(response, nickname, in, client);
-            System.out.print(response);
             response = client.readMessage();
-            System.out.print(response);
+            System.out.println(response); //START
             client.setId(Long.parseLong(response.substring((response.indexOf(" ") + 1), response.lastIndexOf(" "))));
             game = new Game();
             GameHelper gameHelper = new GameHelper();
             gameHelper.updateBoard(client, game);
-
+            String message = "";
             //noinspection InfiniteLoopStatement
-            while ( true ) {
+            while (true) {
 
-                String message = client.readMessage();
-                System.out.print(message);
+                message = "";
+                message = client.readMessage(); // ODEBRANIE GLOWNEGO KOMUNIKATU
+
                 int[] attackInfo;
                 String attackResult = "", attack = "";
-                if (message.equals("TWOJ RUCH\n")) {
+                System.out.println("MESSEGE: " + message);
+                if (message.startsWith("TWOJ")) {
                     do {
                         attack = gameHelper.generateAttack(client, game);
-                        client.sendMessage(attack);
-                        System.out.print(attack);
-                        if (!attack.equals("PASS\n"))
-                            client.readMessage(); // ATTACK INFO
-                        String serverResponse = client.readMessage();
-                        System.out.println(serverResponse); // OK LUB ERROR
-                        if (serverResponse.equals(ERROR))
-                            break;
-                        if (!attack.equals("PASS\n")) {
-                            String attackResponse = client.readMessage();
-                            System.out.print("WYNIK1 : " + attackResponse); // WYNIK
+                        client.sendMessage(attack); //WYSYLAM ATAK
+                        if (attack.startsWith("ATAK")) {
+                            System.out.print("MOJ ATAK TO: " + attack);   //WYSWIETLAM WYGENEROWANY ATAK
+                            System.out.println("ODPOWIEDZ PO: " + client.readMessage()); // OK LUB ERROR
+                            String attackResponse = client.readMessage(); //ODBIERAM WYNIK ATAKU
+                            System.out.println("WYNIK MOJEGO ATAKU: " + attackResponse); // WYSWIETLAM WYNIK ATAKU
                             attackInfo = ResponseParser.getAttackInfo(attack);
-                            gameHelper.resolveAttack(game, attackInfo, ResponseParser.getWinner(attackResult));
+                            int winner = ResponseParser.getWinner(attackResponse);
+                            gameHelper.resolveAttack(game, attackInfo, winner);
+                        } else {
+                            System.out.print("MOJ PASS: " + attack);
+                            System.out.println("ODPOWIEDZ PO PASS: " + client.readMessage());
                         }
-                    } while(!attack.equals("PASS\n"));
-
+                    } while (!attack.startsWith("PAS")); //ATAKUJ POKI NIE BEDZIE PASS
+                    System.out.println("ZAKONCZYLEM RUCH");
                 }
                 if (message.startsWith("ATAK")) {
-                    attack = client.readMessage(); //ATTACK Kiedy nie atakujesz
-                    attackInfo = ResponseParser.getAttackInfo(attack);
-                    attackResult = client.readMessage(); // WYNIK kiedy nie atakujesz
-                    System.out.print("ARARARA: " + attackResult);
-                    gameHelper.resolveAttack(game, attackInfo, ResponseParser.getWinner(attackResult)); // SPRAWDZIC
+                    System.out.println("KTOS WYKONAL: " + message);
+                    attackInfo = ResponseParser.getAttackInfo(message);
+                    attackResult = client.readMessage(); // ODEBRANIE WYNIKU ATAKU NIE W SWOIM RUCHU
+                    System.out.println("WYNIK CZYJEGOS ATAKU: " + attackResult);
+                    int winner = ResponseParser.getWinner(attackResult);
+                    gameHelper.resolveAttack(game, attackInfo, winner);
                 }
-                if (message.equals("KONIEC RUNDY\n")) {
-                    gameHelper.updateBoard(client, game);
+                if (message.startsWith("KONIEC")) {
+                    System.out.println(message); // WYSWIETLENIE KOMUNIKATU KONIEC RUNDY
+                    gameHelper.updateBoard(client, game);   // ODEBRANIE KOMUNIKATU PLANSZA I ZAKUTALIZOWANIE PLANSZY
                 }
-                if (message.startsWith("TURA")) {
-                    game = new Game();
-                    gameHelper.updateBoard(client, game);
+                if (message.startsWith("TUR")) {
+                    System.out.println("MOJA TURA: " + message); // WYSWIETLENIE KOMUNIKATU KONCA TURY
+                    game = new Game();  // WYLOSOWANIE NOWEJ PLANSZY
+                    gameHelper.updateBoard(client, game);  // ODEBRANIE I ZAKTUALIZOWANIE PLANSZY
                 }
-//                if (message.startsWith("WYNIK")) {
-//                    System.out.println(message);
-//                    break;
-//                }
+                if (message.startsWith("WYNI")) {
+                    System.out.println(client.readMessage()); //ODERBANIE KOMUNIKATU KONCA
+                    break;
+                }
             }
-
         } catch (Exception ex) {
-            System.out.println("Client Error : " + ex.getMessage());
+             System.out.println("Client Error : " + ex.getMessage());
             ex.printStackTrace();
         }
     }

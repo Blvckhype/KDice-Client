@@ -49,11 +49,13 @@ public class Client {
     }
 
     public String readMessage() throws IOException {
-        return this.getFromServer().readLine() + "\n";
+        return this.getFromServer().readLine();
+
     }
 
     public void sendMessage(String message) throws IOException {
         this.getToServer().writeBytes(message);
+        this.getToServer().flush();
     }
 
 

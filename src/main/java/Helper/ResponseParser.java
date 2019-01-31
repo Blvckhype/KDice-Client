@@ -12,18 +12,17 @@ public class ResponseParser {
     }
 
     public static int[] getAttackInfo(String command) {
-        command = command.substring(command.indexOf(" ") + 1);
-        String[] values = command.split(" ");
-        int[] atta = new int[values.length];
-        for (int i = 0 ; i < values.length ; i++) {
-            atta[i] = Integer.parseInt(values[i]) - 1;
-        }
+        String replaceString = command.replaceAll("\\s","");
+        replaceString = replaceString.replaceAll("[^0-9.]", "");
+        int[] atta = new int[replaceString.length()];
+        for (int i = 0; i < replaceString.length(); i++)
+            atta[i] = Character.getNumericValue(replaceString.charAt(i)) - 1;
         return atta;
     }
 
     public static int getWinner (String command) {
-        command = command.substring(command.indexOf(" ") + 1);
-        String[] values = command.split(" ");
-        return Integer.parseInt(values[values.length - 1]);
+        String replaceString = command.replaceAll("\\s","");
+        replaceString = replaceString.replaceAll("[^0-9.]", "");
+        return Character.getNumericValue(replaceString.charAt(replaceString.length() - 1));
     }
 }
