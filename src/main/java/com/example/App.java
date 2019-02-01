@@ -7,25 +7,21 @@ import Model.Game;
 
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Random;
 
 public class App {
 
-    private static Socket socket;
-    private static Client client;
-    private static Game game;
-
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) {
         String response = "";
         try {
-            socket = new Socket("localhost", 8888);
-            client = new Client(socket);
-            System.out.println(client.readMessage()); //POLACZONO
-            client.sendMessage(generateNickname());
+            Socket socket = new Socket("10.100.6.80", 9999);
+            Client client = new Client(socket);
+            System.out.println(client.readMessage());
+            client.sendMessage("LOGIN s434739\n");
+            System.out.println(client.readMessage()); //OK
             response = client.readMessage();
-            System.out.println(response); //START
+            System.out.println(response);
             client.setId(Long.parseLong(response.substring((response.indexOf(" ") + 1), response.lastIndexOf(" "))));
-            game = new Game();
+            Game game = new Game();
             GameHelper gameHelper = new GameHelper();
             gameHelper.updateBoard(client, game);
             String message;
@@ -38,13 +34,12 @@ public class App {
 
                 int[] attackInfo;
                 String attackResult = "", attack = "";
-//                System.out.println("MESSEGE: " + message);
                 if (message.startsWith("TWOJ")) {
                     do {
                         attack = gameHelper.generateAttack(client, game);
                         client.sendMessage(attack); //WYSYLAM ATAK
                         if (attack.startsWith("ATAK")) {
-                            System.out.print("MOJ ATAK TO: " + attack);   //WYSWIETLAM WYGENEROWANY ATAK
+                            System.out.print("MOJ ATAK TO: " + client.readMessage());   //WYSWIETLAM WYGENEROWANY ATAK
                             System.out.println("ODPOWIEDZ PO: " + client.readMessage()); // OK LUB ERROR
                             String attackResponse = client.readMessage(); //ODBIERAM WYNIK ATAKU
                             System.out.println("WYNIK MOJEGO ATAKU: " + attackResponse); // WYSWIETLAM WYNIK ATAKU
@@ -84,15 +79,10 @@ public class App {
                 }
             }
         } catch (SocketException sockEx) {
-            sockEx.printStackTrace();
+            System.out.println();
         } catch (Exception ex) {
             System.out.println("Client Error : " + ex.getMessage());
             ex.printStackTrace();
         }
     }
-
-    private static String generateNickname() {
-        return "LOGIN " + "Tomek-" + new Random().nextInt(15) + "\n";
-    }
-
 }
